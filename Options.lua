@@ -243,9 +243,9 @@ end
 
 y = y - 180
 Heading("Who to buff", 14, y)
-Check(f, "Skip PvP-flagged players", 14, y - 18,
+Check(f, "Skip PvP-flagged players, unless I'm flagged too", 14, y - 18,
   function() return db().skipPvP end, function(v) db().skipPvP = v end,
-  "Buffing a PvP-flagged player flags you too. Ignored if you're already flagged.")
+  "Buffing a PvP-flagged player flags you for PvP. While you're not flagged, they're left off the list. Once you're flagged yourself there's nothing to protect, so they're listed and buffed like anyone else.")
 Check(f, "Use a lower rank on low-level players", 14, y - 42,
   function() return db().downrank end, function(v) db().downrank = v end,
   "A rank more than 10 levels above the player fails, so pick the highest rank that works.")

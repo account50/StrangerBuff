@@ -123,7 +123,8 @@ Measured on this client: a cast aimed at your target or at the player under your
 - Paladins: you keep at most one of your own blessings on a player. A blessing another paladin already put on them is never recast.
 - Uses a lower rank on players too low for your top rank (option).
 - Divine Spirit, Arcane Intellect and Blessing of Wisdom go only to mana users (per-buff option).
-- Skips dead players, players out of range (shown dimmed), PvP-flagged players unless you're already flagged (option), and for 5 seconds anyone a cast just failed on (for example, line of sight).
+- Skips dead players, players out of range (shown dimmed), and for 5 seconds anyone a cast just failed on (for example, line of sight).
+- Skips PvP-flagged players while you are not flagged yourself, so you don't get flagged by accident (option). Once you're flagged too, they're buffed like anyone else.
 - Out of mana: nothing is cast, and one quiet chat line tells you.
 - In combat the box pauses and every button is cleared. The game hides buff data from addons in combat. Everything resumes when combat ends.
 
