@@ -696,11 +696,38 @@ function ns.PrepareMouseover(btn)
   Prepare(btn, "mouseover")
 end
 
+-- The wheel binding clicks these buttons as WHEEL_BUTTON, so a wheel notch can be
+-- told apart from a key binding (which clicks as LeftButton). The secure template
+-- falls back to the plain type/spell/unit attributes for either.
+local WHEEL_BUTTON = "RightButton"
+
+-- Taking the wheel for buffing would otherwise swallow the camera zoom. Zooming
+-- isn't a protected action, so pass it along: do whatever the wheel key is
+-- normally bound to, if that is a camera zoom.
+local function WheelZoom(_, mouseButton)
+  if mouseButton ~= WHEEL_BUTTON or not ns.db.wheelZoom then return end
+  local key = ns.db.wheelKey or ""
+  local action
+  if type(GetBindingAction) == "function" then
+    action = Call(GetBindingAction, key, false) -- the normal binding underneath ours
+  elseif key == "MOUSEWHEELDOWN" then
+    action = "CAMERAZOOMOUT"
+  elseif key == "MOUSEWHEELUP" then
+    action = "CAMERAZOOMIN"
+  end
+  if action == "CAMERAZOOMOUT" and type(CameraZoomOut) == "function" then
+    pcall(CameraZoomOut, 1)
+  elseif action == "CAMERAZOOMIN" and type(CameraZoomIn) == "function" then
+    pcall(CameraZoomIn, 1)
+  end
+end
+
 local function MakeHiddenButton(name, prepare)
   local b = CreateFrame("Button", name, UIParent, "SecureActionButtonTemplate")
   b:RegisterForClicks("AnyUp", "AnyDown")
   b:SetAttribute("useOnKeyDown", true) -- mouse wheel only sends a key-down
   b:SetScript("PreClick", prepare)
+  b:SetScript("PostClick", WheelZoom)
   b:Hide()
   return b
 end
@@ -734,11 +761,11 @@ function ns.UpdateWheel(want)
   if InCombatLockdown() then return end
   local btn, click
   if hoverButton and ns.db.wheelHover then
-    btn, click = "StrangerBuffRowWheelButton", "LeftButton"
+    btn, click = "StrangerBuffRowWheelButton", WHEEL_BUTTON
   elseif mouseoverNeeds and ns.db.wheelMouseover then
-    btn, click = "StrangerBuffMouseoverButton", "LeftButton"
+    btn, click = "StrangerBuffMouseoverButton", WHEEL_BUTTON
   elseif wantNext and ns.db.wheel then
-    btn, click = "StrangerBuffNextButton", "LeftButton"
+    btn, click = "StrangerBuffNextButton", WHEEL_BUTTON
   end
   local sig = btn and (ns.db.wheelKey .. ">" .. btn) or nil
   if sig == wheelBoundTo then return end

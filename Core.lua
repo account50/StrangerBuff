@@ -89,6 +89,7 @@ ns.DEFAULTS = {
   wheel = true,          -- wheel anywhere buffs the top player in range
   wheelHover = true,     -- wheel over a name buffs that player
   wheelMouseover = true, -- wheel over a player in the world (or their nameplate) buffs them
+  wheelZoom = true,      -- a wheel notch that buffs also zooms the camera as usual
   wheelKey = "MOUSEWHEELDOWN",
   minimapAngle = 200,
   minimapHide = false,

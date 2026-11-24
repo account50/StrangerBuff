@@ -63,7 +63,7 @@ It copies the addon into the default macOS AddOns folder and only touches `AddOn
    - over a **name in the box**: buffs that player;
    - over a **player in the world, or their nameplate**: buffs that player, if they're missing one of your buffs;
    - **anywhere else**: buffs the top player in range.
-   The wheel is only taken over while there's someone to buff and you're out of combat. The rest of the time it zooms the camera as usual.
+   The wheel is only taken over while there's someone to buff and you're out of combat, and even then it still zooms the camera as well (option). The rest of the time it's left alone.
 5. If your target is a friendly player missing buffs, they're listed near the top, marked **[T]**. You're listed first, marked **[Me]**, when you're missing one of your own buffs (option).
 6. A buff with 10% or less of its time left also puts that player on the list, with an amber icon (the percentage is an option; 0 turns it off). It's only offered when your rank is at least as strong as the one they have, so the cast can't fail against a more powerful buff.
 7. Buffing someone from the box selects them for a moment. If you had someone selected, you go straight back to them afterwards (option).

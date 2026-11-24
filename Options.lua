@@ -2,7 +2,7 @@
 -- the addon compartment, or Esc > Options > AddOns). Only uses basic templates.
 local ADDON, ns = ...
 
-local W, H = 440, 736
+local W, H = 440, 760
 local f = CreateFrame("Frame", "StrangerBuffOptions", UIParent)
 f:SetSize(W, H)
 f:SetPoint("CENTER")
@@ -279,8 +279,11 @@ Check(f, "Mouse wheel over a player in the world buffs them", 14, y - 98,
 Check(f, "Return to my previous target after buffing", 14, y - 122,
   function() return db().restoreTarget end, function(v) db().restoreTarget = v end,
   "Buffing someone from the box has to select them for a moment. With this on, you go straight back to whoever you had selected.")
+Check(f, "Mouse wheel still zooms the camera while buffing", 14, y - 146,
+  function() return db().wheelZoom end, function(v) db().wheelZoom = v end,
+  "A wheel scroll that buffs someone also zooms the camera, as if the addon weren't using the wheel. Turn off to have those scrolls only buff.")
 
-y = y - 158
+y = y - 182
 Heading("Box", 14, y)
 Check(f, "Show the box", 14, y - 18,
   function() return not db().hidden end, function(v) db().hidden = not v end)
