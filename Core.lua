@@ -78,6 +78,7 @@ ns.DEFAULTS = {
   downrank = true,
   showTarget = true,
   includeSelf = true,    -- list me when I'm missing one of my own buffs
+  includePets = true,    -- list hunter pets and warlock demons (mine and other players')
   refreshPct = 10,       -- also list buffs with this % or less of their time left (0 = off)
   restoreTarget = true,  -- after buffing someone from the box, go back to my previous target
   locked = false,

@@ -65,8 +65,9 @@ It copies the addon into the default macOS AddOns folder and only touches `AddOn
    - **anywhere else**: buffs the top player in range.
    The wheel is only taken over while there's someone to buff and you're out of combat, and even then it still zooms the camera as well (option). The rest of the time it's left alone.
 5. If your target is a friendly player missing buffs, they're listed near the top, marked **[T]**. You're listed first, marked **[Me]**, when you're missing one of your own buffs (option).
-6. A buff with 10% or less of its time left also puts that player on the list, with an amber icon (the percentage is an option; 0 turns it off). It's only offered when your rank is at least as strong as the one they have, so the cast can't fail against a more powerful buff.
-7. Buffing someone from the box selects them for a moment. If you had someone selected, you go straight back to them afterwards (option).
+6. **Pets** are listed too (option): other players' hunter pets and warlock demons, marked **[Pet]**, and your own, marked **[My pet]**. Totems and guardians are never listed. Other players' pets only appear if the game is showing nameplates for friendly pets, which is a separate setting from player nameplates (Esc > Options > Nameplates).
+7. A buff with 10% or less of its time left also puts that player on the list, with an amber icon (the percentage is an option; 0 turns it off). It's only offered when your rank is at least as strong as the one they have, so the cast can't fail against a more powerful buff.
+8. Buffing someone from the box selects them for a moment. If you had someone selected, you go straight back to them afterwards (option).
 
 Open the options from the gear icon on the box, the minimap button, or Esc > Options > AddOns > StrangerBuff.
 
@@ -135,6 +136,7 @@ Measured on this client: a cast aimed at your target or at the player under your
 - **Buffing from the box changes your target for a moment.** Forever gives addons no other way to reach a player who isn't your target or under your cursor. With the default setting you're returned to your previous target.
 - **English client only for items.** Food, flasks, elixirs and poisons are recognised by English names and tooltip text.
 - **An addon can't cast by itself.** Every cast comes from your own click, key press or wheel scroll.
+- **Pets that share a name.** A pet in the box is reached by its name. If two nearby pets are both called "Cat", the game picks the nearer one, so the buff may land on the other pet. Pointing at the pet in the world and scrolling always hits the right one.
 
 ## Troubleshooting
 
