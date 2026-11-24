@@ -59,28 +59,10 @@ local function IsManaUser(unit)
   return false
 end
 
--- Someone's combat pet: a hunter pet or a warlock demon. Totems and guardians are
--- player-controlled too, but only real pets have a creature family (Wolf, Imp...).
-local function PetFamily(unit)
-  if IsTrue(UnitIsPlayer, unit) or not IsTrue(UnitPlayerControlled, unit) then return nil end
-  local fam = Call(UnitCreatureFamily, unit)
-  if type(fam) == "string" and fam ~= "" then return fam end
-  return nil
-end
-ns.PetFamily = PetFamily
-
 -- Why a unit can't be buffed right now, or nil if it can.
 local function Ineligible(unit)
   if not IsTrue(UnitExists, unit) then return "gone" end
-  if not IsTrue(UnitIsPlayer, unit) then
-    if not PetFamily(unit) then return "not a player" end
-    if not ns.db.includePets then return "pet (pets are off)" end
-    if not IsTrue(UnitCanAssist, "player", unit) then return "not friendly" end
-    if IsTrue(UnitIsDeadOrGhost, unit) then return "dead" end
-    -- A pet carries its owner's PvP flag.
-    if ns.db.skipPvP and IsTrue(UnitIsPVP, unit) and not IsTrue(UnitIsPVP, "player") then return "pvp" end
-    return nil
-  end
+  if not IsTrue(UnitIsPlayer, unit) then return "not a player" end
   if IsTrue(UnitIsUnit, unit, "player") then
     -- Me: listed like anyone else when I'm missing one of my own buffs (option).
     if not ns.db.includeSelf then return "self" end
@@ -376,7 +358,7 @@ function ns.Evaluate(unit)
     end
   end
 
-  return { key = key, missing = missing, pet = PetFamily(unit) }
+  return { key = key, missing = missing }
 end
 
 function ns.InRange(spell, unit)
@@ -411,7 +393,6 @@ end
 local function FindUnitByKey(key)
   if not key then return nil end
   if UnitKey("player") == key then return "player" end
-  if UnitKey("pet") == key then return "pet" end
   if UnitKey("target") == key then return "target" end
   if UnitKey("mouseover") == key then return "mouseover" end
   for i = 1, MAX_PLATES do
@@ -447,8 +428,6 @@ function ns.BuildList()
       inRange = ns.InRange(info.missing[1].spell, unit),
       isTarget = isTarget,
       isSelf = isSelf,
-      pet = info.pet,                      -- creature family ("Wolf", "Voidwalker") if this is a pet
-      isMyPet = info.pet and IsTrue(UnitIsUnit, unit, "pet") or false,
       seen = state.firstSeen[info.key],
     }
     byKey[info.key] = e
@@ -456,7 +435,6 @@ function ns.BuildList()
   end
 
   if ns.db.includeSelf then consider("player", false, true) end
-  if ns.db.includePets and IsTrue(UnitExists, "pet") then consider("pet", false) end
   if ns.db.showTarget and IsTrue(UnitExists, "target") then consider("target", true) end
   for i = 1, MAX_PLATES do
     local u = "nameplate" .. i
@@ -465,10 +443,8 @@ function ns.BuildList()
 
   table.sort(list, function(a, b)
     if a.isSelf ~= b.isSelf then return a.isSelf and true or false end
-    if a.isMyPet ~= b.isMyPet then return a.isMyPet and true or false end
     if a.isTarget ~= b.isTarget then return a.isTarget and true or false end
     if a.inRange ~= b.inRange then return a.inRange and true or false end
-    if (a.pet ~= nil) ~= (b.pet ~= nil) then return a.pet == nil end -- players before pets
     if a.seen ~= b.seen then return (a.seen or 0) > (b.seen or 0) end
     return a.name < b.name
   end)
@@ -583,7 +559,7 @@ end
 -- After a targeting click, see whether it reached the right player. With
 -- "return to previous target" the final target proves nothing, so success is any
 -- of: the target passed through them, the buff landed, or they are the target.
-local function WatchReach(key, name, isPet)
+local function WatchReach(key, name)
   local now = GetTime()
   if reach.pending and now - reach.pending.t < 0.3 then return end -- same physical click
   local p = { key = key, t = now, hit = false }
@@ -597,10 +573,6 @@ local function WatchReach(key, name, isPet)
         reach.fail = 0
         if not ns.db.reachOK then ns.Log("targeting by name works on this client") end
         ns.db.reachOK = true
-      elseif isPet then
-        -- Pets often share a name ("Cat", "Wolf"), so the game may have picked
-        -- another one. That says nothing about whether name targeting works.
-        ns.Log("targeting by name did not reach the pet " .. name .. " (another pet may share its name)")
       else
         reach.fail = reach.fail + 1
         ns.Log("targeting by name did not reach " .. name .. " (" .. reach.fail .. " in a row)")
@@ -637,7 +609,7 @@ local function Prepare(btn, unit, sfx, reachable)
   local m = info.missing[1]
   local name = UnitShortName(unit)
 
-  if unit ~= "target" and unit ~= "mouseover" and unit ~= "player" and unit ~= "pet" then
+  if unit ~= "target" and unit ~= "mouseover" and unit ~= "player" then
     -- A nameplate token: the client ignores actions aimed at it.
     if not reachable then
       LogPrep(btn, "can't reach " .. name .. " (unit=" .. unit .. ")")
@@ -645,10 +617,9 @@ local function Prepare(btn, unit, sfx, reachable)
     end
     if reach.mode == "cycle" then
       btn:SetAttribute("type" .. sfx, "macro")
-      -- /targetfriendplayer skips pets; /targetfriend steps through every friendly unit.
-      btn:SetAttribute("macrotext" .. sfx, info.pet and "/targetfriend" or "/targetfriendplayer")
-      LogPrep(btn, "cycle friendly " .. (info.pet and "units" or "players") .. ", looking for " .. name)
-      WatchReach(info.key, name, info.pet ~= nil)
+      btn:SetAttribute("macrotext" .. sfx, "/targetfriendplayer")
+      LogPrep(btn, "cycle friendly players, looking for " .. name)
+      WatchReach(info.key, name)
       return true
     end
     if OnCooldown(m.spell) then return false end
@@ -664,7 +635,7 @@ local function Prepare(btn, unit, sfx, reachable)
     btn:SetAttribute("macrotext" .. sfx, text)
     state.attempt = { key = info.key, fam = m.fam, t = GetTime(), name = name }
     LogPrep(btn, "target " .. name .. " by name, then cast: " .. text:gsub("\n", " | "))
-    WatchReach(info.key, name, info.pet ~= nil)
+    WatchReach(info.key, name)
     return true
   end
 
@@ -706,7 +677,7 @@ function ns.PrepareNext(btn)
       local unit = FindUnitByKey(e.key)
       -- Without name targeting, only a player who is already my target or under
       -- my cursor can be reached from here.
-      local direct = (unit == "target" or unit == "mouseover" or unit == "player" or unit == "pet")
+      local direct = (unit == "target" or unit == "mouseover" or unit == "player")
       if unit and (direct or reach.mode == "name") and Prepare(btn, unit, "", true) then return end
     end
   end
@@ -883,7 +854,7 @@ local function Refresh()
   -- Only take the wheel when scrolling could actually buff someone.
   local anyInRange = false
   for _, e in ipairs(list) do
-    if e.inRange and (reach.mode == "name" or e.isTarget or e.isSelf or e.isMyPet) then anyInRange = true break end
+    if e.inRange and (reach.mode == "name" or e.isTarget or e.isSelf) then anyInRange = true break end
   end
   local visible = ns.RenderBox and ns.RenderBox(list, status)
   CheckMouseover() -- also catches the hovered player getting buffed

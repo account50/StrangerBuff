@@ -2,7 +2,7 @@
 -- the addon compartment, or Esc > Options > AddOns). Only uses basic templates.
 local ADDON, ns = ...
 
-local W, H = 440, 784
+local W, H = 440, 760
 local f = CreateFrame("Frame", "StrangerBuffOptions", UIParent)
 f:SetSize(W, H)
 f:SetPoint("CENTER")
@@ -255,13 +255,10 @@ Check(f, "Show my target at the top", 14, y - 66,
 Check(f, "Include myself", 230, y - 66,
   function() return db().includeSelf end, function(v) db().includeSelf = v end,
   "List yourself, marked [Me], when you're missing one of your own buffs.")
-Check(f, "Include pets (hunter pets, warlock demons)", 14, y - 90,
-  function() return db().includePets end, function(v) db().includePets = v end,
-  "List other players' pets, marked [Pet], and your own, marked [My pet]. Other players' pets only appear if the game shows nameplates for friendly pets. Totems and guardians are never listed.")
-Stepper("Re-buff under % left", 14, y - 118, 0, 50, 5, "%d",
+Stepper("Re-buff under % left", 14, y - 94, 0, 50, 5, "%d",
   function() return db().refreshPct end, function(v) db().refreshPct = v end)
 
-y = y - 152
+y = y - 128
 Heading("Casting", 14, y)
 Check(f, "Mouse wheel buffs the top player in range", 14, y - 18,
   function() return db().wheel end, function(v) db().wheel = v end,

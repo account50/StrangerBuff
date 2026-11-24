@@ -67,9 +67,8 @@ end
 local function UnitLine(unit)
   local okN, name = pcall(UnitName, unit)
   local okC, _, class = pcall(UnitClass, unit)
-  return ("name=%s class=%s lvl=%s player=%s controlled=%s family=%s assist=%s pvp=%s dead=%s power=%s idSecret=%s"):format(
+  return ("name=%s class=%s lvl=%s player=%s assist=%s pvp=%s dead=%s power=%s idSecret=%s"):format(
     okN and S(name) or "ERR", okC and S(class) or "ERR", Q(UnitLevel, unit), Q(UnitIsPlayer, unit),
-    Q(UnitPlayerControlled, unit), Q(UnitCreatureFamily, unit),
     Q(UnitCanAssist, "player", unit), Q(UnitIsPVP, unit), Q(UnitIsDeadOrGhost, unit), Q(UnitPowerType, unit),
     Q(C_Secrets and C_Secrets.ShouldUnitIdentityBeSecret, unit))
 end
@@ -89,9 +88,6 @@ function ns.ShowDiagnostics()
   add("cvars: friendlyPlayerPlates=" .. CVar("nameplateShowFriendlyPlayers") .. " showFriends=" .. CVar("nameplateShowFriends")
     .. " showAll=" .. CVar("nameplateShowAll") .. " maxDistance=" .. CVar("nameplateMaxDistance")
     .. " ActionButtonUseKeyDown=" .. CVar("ActionButtonUseKeyDown"))
-  add("pet plates: friendlyPets=" .. CVar("nameplateShowFriendlyPets") .. " friendlyMinions=" .. CVar("nameplateShowFriendlyMinions")
-    .. " friendlyGuardians=" .. CVar("nameplateShowFriendlyGuardians") .. " friendlyNPCs=" .. CVar("nameplateShowFriendlyNPCs")
-    .. " friendlyPlayerPets=" .. CVar("nameplateShowFriendlyPlayerPets"))
   if #ns.unknownEvents > 0 then add("events not available: " .. table.concat(ns.unknownEvents, ", ")) end
 
   add("-- my buffs:")
@@ -125,7 +121,7 @@ function ns.ShowDiagnostics()
       local info, why = ns.Evaluate(u)
       local verdict = info and (#info.missing .. " missing") or ("skipped: " .. S(why))
       add("  " .. u .. ": " .. UnitLine(u) .. " -> " .. verdict)
-      if ns.Bool(ns.Call(UnitIsPlayer, u)) or ns.PetFamily(u) then add("      auras: " .. ReadByIndex(u)) end
+      if ns.Bool(ns.Call(UnitIsPlayer, u)) then add("      auras: " .. ReadByIndex(u)) end
     end
   end
   if plates == 0 then add("  none visible. Turn on friendly player nameplates (Shift+V) to fill the box.") end

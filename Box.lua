@@ -84,7 +84,6 @@ local function RowTooltip(self)
   if not e then return end
   GameTooltip:SetOwner(self, "ANCHOR_LEFT")
   GameTooltip:SetText(e.name)
-  if e.pet then GameTooltip:AddLine(e.isMyPet and ("Your pet (" .. e.pet .. ")") or ("Pet (" .. e.pet .. ")"), 0.6, 0.87, 0.6) end
   if e.done then
     GameTooltip:AddLine("All buffed", 0.3, 1, 0.3)
     GameTooltip:Show()
@@ -179,8 +178,7 @@ local function Stabilize(list)
     if e then
       out[#out + 1] = e
     else
-      out[#out + 1] = { key = prev.key, name = prev.name, class = prev.class, pet = prev.pet, isMyPet = prev.isMyPet,
-        missing = {}, inRange = true, done = true }
+      out[#out + 1] = { key = prev.key, name = prev.name, class = prev.class, missing = {}, inRange = true, done = true }
     end
     used[prev.key] = true
   end
@@ -196,10 +194,7 @@ function ns.RenderBox(list, statusText)
   list = Stabilize(list)
   local n = math.min(#list, db.maxRows or 10, POOL)
   wipe(shownKeys)
-  for i = 1, n do
-    local e = list[i]
-    shownKeys[i] = { key = e.key, name = e.name, class = e.class, pet = e.pet, isMyPet = e.isMyPet }
-  end
+  for i = 1, n do shownKeys[i] = { key = list[i].key, name = list[i].name, class = list[i].class } end
   local active = 0
   for i = 1, #list do if not list[i].done then active = active + 1 end end
 
@@ -209,18 +204,9 @@ function ns.RenderBox(list, statusText)
     r.entry = e
     if e then
       r.entryKey = e.key
-      local tag = ""
-      if e.isSelf then
-        tag = "|cff66ccff[Me]|r "
-      elseif e.isMyPet then
-        tag = "|cff66ccff[My pet]|r "
-      elseif e.pet then
-        tag = "|cff99dd99[Pet]|r "
-      end
-      if e.isTarget then tag = tag .. "|cffffd100[T]|r " end
-      r.tag:SetText(tag)
+      r.tag:SetText(e.isSelf and "|cff66ccff[Me]|r " or (e.isTarget and "|cffffd100[T]|r " or ""))
       r.name:SetText(e.done and (e.name .. "  |cff40ff40done|r") or e.name)
-      if e.pet then r.name:SetTextColor(0.75, 0.9, 0.75) else r.name:SetTextColor(ClassColor(e.class)) end
+      r.name:SetTextColor(ClassColor(e.class))
       for k = 1, MAX_ICONS do
         local m = e.missing[k]
         if m then
