@@ -1,0 +1,5 @@
+<Bindings>
+  <Binding name="CLICK StrangerBuffTargetButton:LeftButton" header="STRANGERBUFF" category="ADDONS"/>
+  <Binding name="CLICK StrangerBuffNextButton:LeftButton" category="ADDONS"/>
+  <Binding name="CLICK StrangerBuffMouseoverButton:LeftButton" category="ADDONS"/>
+</Bindings>

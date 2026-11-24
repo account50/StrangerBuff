@@ -1,0 +1,17 @@
+## Interface: 16001
+## Title: StrangerBuff
+## Notes: Shows nearby players missing your buffs. Click a name or scroll the mouse wheel to buff them.
+## Author: account50
+## Version: 1.1.0
+## IconTexture: Interface\Icons\Spell_Holy_WordFortitude
+## AddonCompartmentFunc: StrangerBuff_OnCompartmentClick
+## SavedVariables: StrangerBuffDiag
+## SavedVariablesPerCharacter: StrangerBuffCharDB
+
+Core.lua
+Spells.lua
+Logic.lua
+Box.lua
+Options.lua
+Minimap.lua
+Diagnostics.lua
