@@ -1,6 +1,58 @@
-# StrangerBuff (WoW Forever, interface 16001)
+# StrangerBuff
 
-Buff the random players around you, not only your group. This is a standalone addon. It doesn't need any other addon or library.
+A World of Warcraft: Forever addon for buffing the players around you, not only your group.
+
+It shows a small box listing nearby friendly players who are missing one of your buffs. Click a name, or scroll the mouse wheel, and they get the buff. It also keeps track of your own buffs and reminders on a **[Me]** row.
+
+- Built for WoW Forever, client 1.60.x, interface 16001.
+- Standalone: no other addons or libraries needed.
+- Works for every class. The buff list comes from your spellbook and your bags.
+- Everything is set up from an options window. No slash commands needed.
+
+## Install
+
+The addon has to end up in a folder named exactly `StrangerBuff` inside WoW Forever's AddOns folder:
+
+| System | Default AddOns folder |
+|---|---|
+| macOS | `/Applications/World of Warcraft/_forever_/Interface/AddOns` |
+| Windows | `C:\Program Files (x86)\World of Warcraft\_forever_\Interface\AddOns` |
+
+`_forever_` is the folder for WoW Forever. Don't use `_retail_` or `_classic_era_`.
+
+### Option 1: download the ZIP
+
+1. On the [GitHub page](https://github.com/account50/StrangerBuff), click **Code**, then **Download ZIP**.
+2. Unzip it. You get a folder named `StrangerBuff-main`.
+3. Rename that folder to `StrangerBuff`. The game ignores it under any other name.
+4. Move it into the AddOns folder above. `StrangerBuff.toc` should sit directly inside `AddOns/StrangerBuff`, not one folder deeper.
+
+### Option 2: clone with git
+
+Open a terminal in the AddOns folder and run:
+
+```bash
+git clone https://github.com/account50/StrangerBuff.git
+```
+
+To update later, run `git pull` inside `AddOns/StrangerBuff`.
+
+### Option 3: macOS install script
+
+If you keep the source somewhere else, run this from the source folder:
+
+```bash
+./install.sh
+```
+
+It copies the addon into the default macOS AddOns folder and only touches `AddOns/StrangerBuff`. Pass a different AddOns path as the first argument if your game is installed elsewhere.
+
+### Check that it loaded
+
+1. **Restart the game** after a first install. After an update, typing `/reload` in chat is enough.
+2. At character select, open **AddOns** and make sure **StrangerBuff** is ticked.
+3. In game, you should see the StrangerBuff box on screen and a StrangerBuff button on the minimap.
+4. Turn on friendly player nameplates (**Shift+V**), or the box has nobody to list.
 
 ## How to use it
 
@@ -66,7 +118,8 @@ Measured on this client: a cast aimed at your target or at the player under your
 
 ## Rules it follows
 
-- Any rank of a buff, or its group version (Prayer of Fortitude, Gift of the Wild, Arcane Brilliance, Greater Blessings), counts as already buffed. It never overwrites someone else's buff.
+- Any rank of a buff, or its group version (Prayer of Fortitude, Gift of the Wild, Arcane Brilliance, Greater Blessings), counts as already buffed. A buff that still has time left is never overwritten.
+- A buff in its last 10% (option) is offered as a refresh, but only when your rank is at least as strong as the one they have. If theirs is stronger, or its rank can't be read, they're left alone.
 - Paladins: you keep at most one of your own blessings on a player. A blessing another paladin already put on them is never recast.
 - Uses a lower rank on players too low for your top rank (option).
 - Divine Spirit, Arcane Intellect and Blessing of Wisdom go only to mana users (per-buff option).
@@ -74,16 +127,20 @@ Measured on this client: a cast aimed at your target or at the player under your
 - Out of mana: nothing is cast, and one quiet chat line tells you.
 - In combat the box pauses and every button is cleared. The game hides buff data from addons in combat. Everything resumes when combat ends.
 
+## Limitations
+
+- **Out of combat only.** The game hides buff data from addons during combat, so the box pauses.
+- **Friendly nameplates must be on.** That is the only way an addon can see who is nearby.
+- **Buffing from the box changes your target for a moment.** Forever gives addons no other way to reach a player who isn't your target or under your cursor. With the default setting you're returned to your previous target.
+- **English client only for items.** Food, flasks, elixirs and poisons are recognised by English names and tooltip text.
+- **An addon can't cast by itself.** Every cast comes from your own click, key press or wheel scroll.
+
 ## Troubleshooting
 
-Options > **Diagnostics** opens a copyable report of what the client lets the addon see. It's also saved to `WTF/Account/<account>/SavedVariables/StrangerBuff.lua` on /reload.
+Options > **Diagnostics** opens a copyable report: what the client lets the addon see, which buffs it found for your character, who is listed and why, and recent activity. It's also saved to `WTF/Account/<account>/SavedVariables/StrangerBuff.lua` on `/reload`.
 
-## Install
+To see Lua errors, type `/console scriptErrors 1` in game.
 
-Copy this folder into your WoW Forever `Interface/AddOns` folder as `StrangerBuff`, or clone it there:
+## License
 
-```bash
-git clone https://github.com/account50/StrangerBuff.git
-```
-
-On macOS with the default install location, `./install.sh` copies a working copy into the game folder. It only touches `AddOns/StrangerBuff`. Then `/reload`, or restart the game if the addon is new.
+MIT. See [LICENSE](LICENSE).
